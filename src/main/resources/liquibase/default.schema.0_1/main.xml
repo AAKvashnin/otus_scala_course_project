@@ -5,6 +5,45 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
+ <changeSet id="create_iceberg_tables" author="AAKvashnin">
+    <createTable tableName="iceberg_tables">
+       <column name="catalog_name" type="varchar(255)">
+           <constraints nullable="false"/>
+       </column>
+       <column name="table_namespace" type="varchar(255)">
+           <constraints nullable="false"/>
+       </column>
+        <column name="table_name" type="varchar(255)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="metadata_location" type="varchar(1000)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="iceberg_type"
+    </createTable>
+ </changeSet>
+
+ <changeSet id="create_iceberg_tables_pk" author="AAKvashnin">
+     <addPrimaryKey tableName="iceberg_tables" columnNames="catalog_name,table_namespace,table_name"/>
+ </changeSet>
+
+ <changeSet id="create_iceberg_namespace_properties" author="AAKvashnin">
+        <createTable tableName="iceberg_namespace_properties">
+            <column name="catalog_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="namespace" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="property_key" type="varchar(255)"/>
+            <column name="property_value" type="varchar(1000)"/>
+        </createTable>
+ </changeSet>
+
+ <changeSet id="create_iceberg_namespace_properties_pk" author="AAKvashnin">
+     <addPrimaryKey tableName="iceberg_namespace_properties" columnNames="catalog_name,namespace,property_key"/>
+ </changeSet>
+
 
 
 </databaseChangeLog>
