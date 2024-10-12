@@ -7,6 +7,7 @@ object Dependencies {
   lazy val LiquibaseVersion = "3.4.2"
   lazy val PostgresVersion = "42.3.1"
   lazy val CirceVersion = "0.14.2"
+  lazy val LogbackVersion = "1.2.3"
 
 
   lazy val zio: Seq[ModuleID] = Seq(
@@ -28,6 +29,8 @@ object Dependencies {
     "io.getquill" %% "quill-jdbc-zio" % "3.12.0",
     "io.github.kitlangton" %% "zio-magic" % "0.3.11"
   )
+
+  lazy val logback = "ch.qos.logback"  %  "logback-classic" % LogbackVersion
 
   lazy val liquibase = "org.liquibase" % "liquibase-core" % LiquibaseVersion
 

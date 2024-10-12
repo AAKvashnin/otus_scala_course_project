@@ -11,5 +11,6 @@ libraryDependencies += Dependencies.liquibase
 libraryDependencies += Dependencies.postgres
 libraryDependencies ++= Dependencies.quill
 libraryDependencies ++= Dependencies.circe
+libraryDependencies += Dependencies.logback
 
 scalacOptions += "-Ymacro-annotations"
