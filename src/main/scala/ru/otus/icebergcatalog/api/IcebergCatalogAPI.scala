@@ -24,8 +24,7 @@ object IcebergCatalogAPI {
       r <- req.body
       dto <- ZIO.fromEither(NamespaceDTO.decoder.decodeJson(r.asJson))
       result <- IcebergCatalogService.createNamespace(dto)
-    } yield result
-    ).foldM(
+    } yield result).foldM(
         err=>ZIO.succeed(Response.status(Status.BadRequest)),
         result=>ZIO.succeed(Response.json(result.asJson.toString()))
       )

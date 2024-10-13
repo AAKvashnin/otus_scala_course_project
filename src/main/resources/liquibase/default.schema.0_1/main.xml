@@ -19,7 +19,7 @@
         <column name="metadata_location" type="varchar(1000)">
             <constraints nullable="false"/>
         </column>
-        <column name="iceberg_type"
+        <column name="iceberg_type" type="varchar(5)"/>
     </createTable>
  </changeSet>
 

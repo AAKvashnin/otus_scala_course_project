@@ -1,22 +1,28 @@
 package ru.otus.icebergcatalog
 
 import ru.otus.icebergcatalog.api.IcebergCatalogAPI
+import ru.otus.icebergcatalog.dao.repositories.IcebergTableRepository
 import ru.otus.icebergcatalog.services.IcebergCatalogService
+import ru.otus.icebergcatalog.configuration.Configuration
+import ru.otus.icebergcatalog.db.{LiquibaseService,DataSource}
 import zio.blocking.Blocking
 import zio.clock.Clock
 import zio.random.Random
 object App {
 
   type AppEnvironment = IcebergCatalogService.IcebergCatalogService with
-    Clock with Blocking
-    with Random
+   IcebergTableRepository.IcebergTableRepository with Configuration with
+   LiquibaseService.Liqui with LiquibaseService.LiquibaseService
+    with Clock with Blocking
+    with Random with DataSource
 
-  val appEnvironment =  Blocking.live >+> IcebergCatalogService.live
+  val appEnvironment =  Configuration.live >+> Blocking.live >+> db.zioDS >+>
+    LiquibaseService.liquibaseLayer ++ IcebergTableRepository.live >+> IcebergCatalogService.live ++ LiquibaseService.live
 
   val httpApp = IcebergCatalogAPI.api
 
-  val server =
-    zhttp.service.Server.start(8080, httpApp)
+  val server = (LiquibaseService.performMigration *>
+    zhttp.service.Server.start(8080, httpApp))
       .provideCustomLayer(appEnvironment)
 
 
