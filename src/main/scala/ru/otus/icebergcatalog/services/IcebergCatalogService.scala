@@ -5,8 +5,9 @@ import zio.macros.accessible
 import zio.random.Random
 import ru.otus.icebergcatalog.db.DataSource
 import ru.otus.icebergcatalog.dto._
-import ru.otus.icebergcatalog.dao.repositories._
+import ru.otus.icebergcatalog.dao.repositories.{IcebergTableRepository}
 import ru.otus.icebergcatalog.dao.entities._
+import ru.otus.icebergcatalog.db
 
 
 
@@ -22,20 +23,26 @@ object IcebergCatalogService {
 
   }
 
-  class Impl extends Service {
+  class Impl(icebergTableRepository:IcebergTableRepository.Service) extends Service {
+
+    val ctx  = db.Ctx
 
     def config():RIO[Any, CatalogConfigDTO] =
       ZIO.succeed(CatalogConfigDTO(Map.empty[String,String],Map.empty[String,String],List.empty[String]))
 
-    def listNamespaces():RIO[Any,ListNamespacesResponseDTO]=
-      ZIO.succeed(
-        ListNamespacesResponseDTO(List.empty[List[String]])
-      )
+    def listNamespaces():RIO[Any,ListNamespacesResponseDTO]=for {
+      namespaces<-icebergTableRepository.listNamespace()
+      namespacesList<-RIO.collectAll(namespaces)
+      results<-RIO.succeed(namespacesList.map(l=>ListNamespacesResponseDTO(l)))
+    } yield (results)
+//      ZIO.succeed(
+//        ListNamespacesResponseDTO(List.empty[List[String]])
+//      )
 
     def createNamespace(req:NamespaceDTO):RIO[Any,NamespaceDTO]=
       ZIO.succeed(NamespaceDTO(List("example"),Map("property"-> "value")))
 
   }
 
-  val live:ULayer[IcebergCatalogService]=ZLayer.succeed(new Impl)
+  val live:ULayer[IcebergCatalogService]=ZLayer.succeed(new Impl(IcebergTableRepository.live))
 }

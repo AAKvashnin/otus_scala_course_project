@@ -19,6 +19,8 @@ object IcebergTableRepository {
 
     def list():QIO[List[IcebergTable]]
 
+    def listNamespace():QIO[List[String]]
+
 
   }
 
@@ -29,6 +31,8 @@ object IcebergTableRepository {
    }
 
     def list():QIO[List[IcebergTable]]=ctx.run(icebergTableSchema)
+
+    override def listNamespace(): QIO[List[String]] = ctx.run(icebergTableSchema.map(t=>t.tableNamespace).distinct)
 
 
 
