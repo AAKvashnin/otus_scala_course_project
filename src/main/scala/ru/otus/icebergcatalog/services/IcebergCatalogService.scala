@@ -5,7 +5,7 @@ import zio.macros.accessible
 import zio.random.Random
 import ru.otus.icebergcatalog.db.DataSource
 import ru.otus.icebergcatalog.dto._
-import ru.otus.icebergcatalog.dao.repositories.{IcebergTableRepository}
+import ru.otus.icebergcatalog.dao.repositories.{IcebergNamespaceRepository,IcebergTableRepository}
 import ru.otus.icebergcatalog.dao.entities._
 import ru.otus.icebergcatalog.db
 
@@ -17,32 +17,32 @@ object IcebergCatalogService {
   type IcebergCatalogService = Has[Service]
 
   trait Service {
-    def config():RIO[Any, CatalogConfigDTO]
-    def listNamespaces():RIO[Any,ListNamespacesResponseDTO]
-    def createNamespace(req: NamespaceDTO):RIO[Any,NamespaceDTO]
+    def config():RIO[db.DataSource, CatalogConfigDTO]
+    def listNamespaces():RIO[db.DataSource,ListNamespacesResponseDTO]
+    def createNamespace(req: NamespaceDTO):RIO[db.DataSource,NamespaceDTO]
 
   }
 
-  class Impl(icebergTableRepository:IcebergTableRepository.Service) extends Service {
+  class Impl(icebergTableRepository:IcebergTableRepository.Service, icebergNamespaceRepository:IcebergNamespaceRepository.Service) extends Service {
 
     val ctx  = db.Ctx
 
-    def config():RIO[Any, CatalogConfigDTO] =
+    def config():RIO[db.DataSource, CatalogConfigDTO] =
       ZIO.succeed(CatalogConfigDTO(Map.empty[String,String],Map.empty[String,String],List.empty[String]))
 
-    def listNamespaces():RIO[Any,ListNamespacesResponseDTO]=for {
+    def listNamespaces():RIO[db.DataSource,ListNamespacesResponseDTO]=for {
       namespaces<-icebergTableRepository.listNamespace()
-      namespacesList<-RIO.collectAll(namespaces)
-      results<-RIO.succeed(namespacesList.map(l=>ListNamespacesResponseDTO(l)))
-    } yield (results)
-//      ZIO.succeed(
-//        ListNamespacesResponseDTO(List.empty[List[String]])
-//      )
+      result<-RIO.succeed(ListNamespacesResponseDTO(List(namespaces)))
+    } yield (result)
 
-    def createNamespace(req:NamespaceDTO):RIO[Any,NamespaceDTO]=
-      ZIO.succeed(NamespaceDTO(List("example"),Map("property"-> "value")))
+
+    def createNamespace(req:NamespaceDTO):RIO[db.DataSource,NamespaceDTO]=for {
+       //namespaceExists<-icebergTableRepository.find(req.namespace.head).some
+       _ <-icebergNamespaceRepository.insertNamespaceProperty(IcebergNamespaceProperty("", req.namespace.head, "exists", "true"))
+       result <- ZIO.succeed(NamespaceDTO(req.namespace, Map("exists"-> "true")))
+    } yield (result)
 
   }
 
-  val live:ULayer[IcebergCatalogService]=ZLayer.succeed(new Impl(IcebergTableRepository.live))
+  val live:ZLayer[IcebergTableRepository.IcebergTableRepository with IcebergNamespaceRepository.IcebergNamespaceRepository, Nothing, IcebergCatalogService.IcebergCatalogService]=ZLayer.fromServices[IcebergTableRepository.Service,IcebergNamespaceRepository.Service,IcebergCatalogService.Service]((repo,repo1)=>new Impl(repo,repo1))
 }

@@ -6,6 +6,7 @@ import io.getquill.{EntityQuery, Ord, Quoted}
 import ru.otus.icebergcatalog.db
 
 
+
 import ru.otus.icebergcatalog.dao.entities._
 
 object IcebergTableRepository {
@@ -21,6 +22,8 @@ object IcebergTableRepository {
 
     def listNamespace():QIO[List[String]]
 
+    def find(namespace:String):QIO[Option[IcebergTable]]
+
 
   }
 
@@ -30,9 +33,13 @@ object IcebergTableRepository {
      querySchema[IcebergTable]("""iceberg_tables""", _.tableName -> "table_name", _.catalogName->"catalog_name", _.tableNamespace->"table_namespace", _.metadataLocation->"metadata_location", _.icebergType->"iceberg_type")
    }
 
+
+
     def list():QIO[List[IcebergTable]]=ctx.run(icebergTableSchema)
 
-    override def listNamespace(): QIO[List[String]] = ctx.run(icebergTableSchema.map(t=>t.tableNamespace).distinct)
+    def listNamespace(): QIO[List[String]] = ctx.run(icebergTableSchema.map(t=>t.tableNamespace).distinct)
+
+    def find(namespace:String):QIO[Option[IcebergTable]]=ctx.run(icebergTableSchema.filter(_.tableNamespace == lift(namespace)).take(1)).map(_.headOption)
 
 
 

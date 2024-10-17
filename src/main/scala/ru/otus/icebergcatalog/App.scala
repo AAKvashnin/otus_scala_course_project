@@ -1,10 +1,10 @@
 package ru.otus.icebergcatalog
 
 import ru.otus.icebergcatalog.api.IcebergCatalogAPI
-import ru.otus.icebergcatalog.dao.repositories.IcebergTableRepository
+import ru.otus.icebergcatalog.dao.repositories.{IcebergNamespaceRepository, IcebergTableRepository}
 import ru.otus.icebergcatalog.services.IcebergCatalogService
 import ru.otus.icebergcatalog.configuration.Configuration
-import ru.otus.icebergcatalog.db.{LiquibaseService,DataSource}
+import ru.otus.icebergcatalog.db.{DataSource, LiquibaseService}
 import zio.blocking.Blocking
 import zio.clock.Clock
 import zio.random.Random
@@ -17,7 +17,7 @@ object App {
     with Random with DataSource
 
   val appEnvironment =  Configuration.live >+> Blocking.live >+> db.zioDS >+>
-    LiquibaseService.liquibaseLayer ++ IcebergTableRepository.live >+> IcebergCatalogService.live ++ LiquibaseService.live
+    LiquibaseService.liquibaseLayer ++ IcebergTableRepository.live >+> IcebergNamespaceRepository.live >+> IcebergCatalogService.live ++ LiquibaseService.live
 
   val httpApp = IcebergCatalogAPI.api
 
