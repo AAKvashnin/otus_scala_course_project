@@ -8,7 +8,10 @@ import ru.otus.icebergcatalog.db.{DataSource, LiquibaseService}
 import zio.blocking.Blocking
 import zio.clock.Clock
 import zio.random.Random
+import zio.logging._
+
 object App {
+
 
   type AppEnvironment = IcebergCatalogService.IcebergCatalogService with
    IcebergTableRepository.IcebergTableRepository with Configuration with
