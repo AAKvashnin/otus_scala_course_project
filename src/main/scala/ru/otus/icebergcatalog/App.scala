@@ -8,8 +8,7 @@ import ru.otus.icebergcatalog.db.{DataSource, LiquibaseService}
 import zio.blocking.Blocking
 import zio.clock.Clock
 import zio.random.Random
-import zio.logging._
-
+import zio._
 object App {
 
 
@@ -23,6 +22,7 @@ object App {
     LiquibaseService.liquibaseLayer ++ IcebergTableRepository.live >+> IcebergNamespaceRepository.live >+> IcebergCatalogService.live ++ LiquibaseService.live
 
   val httpApp = IcebergCatalogAPI.api
+
 
   val server = (LiquibaseService.performMigration *>
     zhttp.service.Server.start(8080, httpApp))
