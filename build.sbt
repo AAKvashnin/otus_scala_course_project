@@ -1,3 +1,7 @@
+import sbt._
+import Keys._
+
+
 scalaVersion := "2.13.12"
 
 name := "scala-icebergcatalog"
@@ -14,3 +18,8 @@ libraryDependencies ++= Dependencies.circe
 libraryDependencies += Dependencies.logback
 
 scalacOptions += "-Ymacro-annotations"
+
+assemblyMergeStrategy in assembly := {
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x => MergeStrategy.first
+}
