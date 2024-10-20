@@ -7,6 +7,7 @@ import ru.otus.icebergcatalog.services.IcebergCatalogService
 import ru.otus.icebergcatalog.dto.{NamespaceDTO}
 
 
+
 object IcebergCatalogAPI {
 
   val api = Http.collectZIO[Request] {
@@ -22,7 +23,8 @@ object IcebergCatalogAPI {
       )
     case req@Method.POST -> !! / "v1" / prefix / "namespaces" =>(for{
       r <- req.body
-      _ <- ZIO.debug("Request: " + r.asJson)
+      _ <- ZIO.debug(r.asJson)
+      _ <- ZIO.debug("Request: " + NamespaceDTO.decoder.decodeJson(r.asJson) )
       dto <- ZIO.fromEither(NamespaceDTO.decoder.decodeJson(r.asJson))
       result <- IcebergCatalogService.createNamespace(dto)
     } yield result).foldM(

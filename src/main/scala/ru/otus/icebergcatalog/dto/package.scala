@@ -14,17 +14,18 @@ package object dto {
  }
 
  case class ListNamespacesResponseDTO(namespaces:List[List[String]])
+
  object ListNamespacesResponseDTO {
   implicit val decoder: Decoder[ListNamespacesResponseDTO] = deriveDecoder
   implicit val encoder: Encoder[ListNamespacesResponseDTO] = deriveEncoder
 
  }
 
- case class NamespaceDTO(namespace:List[String], properties:Map[String,String])
+ case class NamespaceDTO(`namespace`:List[String], properties:Map[String,String])
 
  object NamespaceDTO {
-  implicit val decoder: Decoder[NamespaceDTO]=deriveDecoder
-  implicit val encoder: Encoder[NamespaceDTO]=deriveEncoder
+  implicit val decoder: Decoder[NamespaceDTO]=deriveDecoder[NamespaceDTO]
+  implicit val encoder: Encoder[NamespaceDTO]=deriveEncoder[NamespaceDTO]
  }
 
 }

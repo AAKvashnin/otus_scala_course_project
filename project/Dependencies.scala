@@ -6,7 +6,7 @@ object Dependencies {
   lazy val ZIOHttpVersion = "1.0.0.0-RC27"
   lazy val LiquibaseVersion = "3.4.2"
   lazy val PostgresVersion = "42.3.1"
-  lazy val CirceVersion = "0.14.2"
+  lazy val CirceVersion = "0.14.9"
   lazy val LogbackVersion = "1.2.3"
 
 
