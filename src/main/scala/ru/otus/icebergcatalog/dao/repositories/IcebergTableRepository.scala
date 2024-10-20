@@ -22,7 +22,7 @@ object IcebergTableRepository {
 
     def listNamespace():QIO[List[String]]
 
-    def find(namespace:String):QIO[Option[IcebergTable]]
+    def find(namespace:String):QIO[List[IcebergTable]]
 
 
   }
@@ -39,7 +39,7 @@ object IcebergTableRepository {
 
     def listNamespace(): QIO[List[String]] = ctx.run(icebergTableSchema.map(t=>t.tableNamespace).distinct)
 
-    def find(namespace:String):QIO[Option[IcebergTable]]=ctx.run(icebergTableSchema.filter(_.tableNamespace == lift(namespace)).take(1)).map(_.headOption)
+    def find(namespace:String):QIO[List[IcebergTable]]=ctx.run(icebergTableSchema.filter(_.tableNamespace == lift(namespace))
 
 
 

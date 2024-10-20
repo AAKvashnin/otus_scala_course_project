@@ -20,6 +20,7 @@ object IcebergCatalogService {
     def config():RIO[db.DataSource, CatalogConfigDTO]
     def listNamespaces():RIO[db.DataSource,ListNamespacesResponseDTO]
     def createNamespace(req: NamespaceDTO):RIO[db.DataSource,NamespaceDTO]
+    def listTables():RIO[db.DataSource,ListTablesResponseDTO]
 
   }
 
@@ -35,9 +36,13 @@ object IcebergCatalogService {
       result<-RIO.succeed(ListNamespacesResponseDTO(List(namespaces)))
     } yield (result)
 
+    def listTables(namespace:String):RIO[db.DataSource,ListTablesResponseDTO]=for{
+      tables<-icebergTableRepository.find(namespace)
+      result=ListTablesResponseDTO(tables.map(t=>TableIdentifierDTO(List(t.tableNamespace),t.tableName)))
+    } yield result
+
 
     def createNamespace(req:NamespaceDTO):RIO[db.DataSource,NamespaceDTO]=for {
-       //namespaceExists<-icebergTableRepository.find(req.namespace.head).some
        _ <-icebergNamespaceRepository.insertNamespaceProperty(IcebergNamespaceProperty("", req.namespace.head, "exists", "true"))
        result <- ZIO.succeed(NamespaceDTO(req.namespace, Map("exists"-> "true")))
     } yield (result)

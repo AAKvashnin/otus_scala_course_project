@@ -28,4 +28,18 @@ package object dto {
   implicit val encoder: Encoder[NamespaceDTO]=deriveEncoder[NamespaceDTO]
  }
 
+ case class TableIdentifierDTO(namespace:List[String],name:String)
+ case class ListTablesResponseDTO(identifiers:List[TableIdentifierDTO])
+
+ object TableIdentifierDTO {
+  implicit val decoder:Decoder[TableIdentifierDTO]=deriveDecoder[TableIdentifierDTO]
+  implicit val encoder:Encoder[TableIdentifierDTO]=deriveEncoder[TableIdentifierDTO]
+
+ }
+
+ object ListTablesResponseDTO {
+  implicit val decoder:Decoder[ListTablesResponseDTO]=deriveDecoder[ListTablesResponseDTO]
+  implicit val encoder:Encoder[ListTablesResponseDTO]=deriveEncoder[ListTablesResponseDTO]
+ }
+
 }
