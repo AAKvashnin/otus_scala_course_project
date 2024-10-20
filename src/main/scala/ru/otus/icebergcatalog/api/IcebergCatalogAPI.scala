@@ -35,7 +35,10 @@ object IcebergCatalogAPI {
     case Method.HEAD -> !! / "v1" / prefix / "namespaces" / namespace => ???
     case Method.DELETE -> !! / "v1" / prefix / "namespaces" / namespace => ???
     case Method.POST -> !! / "v1" / prefix / "namespaces" /  namespace / "properties" => ???
-    case Method.GET -> !! / "v1" / prefix / "namespaces" / namespace / "tables" => ???
+    case Method.GET -> !! / "v1" / prefix / "namespaces" / namespace / "tables" =>IcebergCatalogService.listTables(namespace).foldM(
+      err => ZIO.succeed(Response.status(Status.BadRequest)),
+      result => ZIO.succeed(Response.json(result.asJson.toString()))
+    )
     case Method.POST -> !! / "v1" / prefix / "namespaces" / namespace / "tables" => ???
     case Method.POST -> !! / "v1" / prefix / "namespaces" / namespace / "tables" / table / "plan" => ???
     case Method.GET -> !! / "v1" / prefix / "namespaces" / namespace / "tables" / table / "plan" / "plan-id" => ???

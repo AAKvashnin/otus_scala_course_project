@@ -20,7 +20,7 @@ object IcebergCatalogService {
     def config():RIO[db.DataSource, CatalogConfigDTO]
     def listNamespaces():RIO[db.DataSource,ListNamespacesResponseDTO]
     def createNamespace(req: NamespaceDTO):RIO[db.DataSource,NamespaceDTO]
-    def listTables():RIO[db.DataSource,ListTablesResponseDTO]
+    def listTables(namespace:String):RIO[db.DataSource,ListTablesResponseDTO]
 
   }
 
